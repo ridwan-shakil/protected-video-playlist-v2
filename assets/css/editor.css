@@ -1,0 +1,117 @@
+/* ── Protected Video Playlist – Editor Styles ─────────────────── */
+
+/* URL input row inside the Placeholder */
+.pvp-placeholder-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+.pvp-placeholder-row .components-base-control {
+    width: 100%;
+    margin-bottom: 0;
+}
+.pvp-placeholder-row .components-text-control__input {
+    width: 100%;
+}
+
+/* Preview card */
+.pvp-editor-preview {
+    background: #f0f6fc;
+    border: 2px dashed #90b8d8;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Playlist icon */
+.pvp-editor-playlist .pvp-editor-icon {
+    font-size: 3rem;
+    line-height: 1;
+    color: #1d6fa4;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.pvp-editor-label {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin: 4px 0 2px;
+}
+
+.pvp-editor-sub {
+    font-size: 0.82rem;
+    font-family: monospace;
+    color: #555;
+    margin: 2px 0;
+}
+
+.pvp-editor-note {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+/* Single video thumbnail */
+.pvp-editor-single .pvp-editor-thumb {
+    display: block;
+    max-width: 320px;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 0 auto 10px;
+}
+
+/*Active/Inactive toggle*/
+.pvp-toggle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.pvp-toggle {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+.pvp-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.pvp-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+.pvp-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+.pvp-toggle input:checked + .pvp-toggle-slider {
+    background-color: #007cba;
+}
+.pvp-toggle input:checked + .pvp-toggle-slider:before {
+    transform: translateX( 22px );
+}
+.pvp-section-content {
+    transition: opacity 0.3s;
+}
+.pvp-section-content.pvp-inactive {
+    opacity: 0.4;
+    pointer-events: none;
+}

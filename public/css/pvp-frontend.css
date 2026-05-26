@@ -1,0 +1,141 @@
+/* ── Protected Video Playlist Grid ──────────────────────── */
+.pvp-grid {
+    display: grid;
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+}
+.pvp-columns-1 { grid-template-columns: 1fr; }
+.pvp-columns-2 { grid-template-columns: repeat(2,1fr); }
+.pvp-columns-3 { grid-template-columns: repeat(3,1fr); }
+.pvp-columns-4 { grid-template-columns: repeat(4,1fr); }
+@media (max-width: 600px) {
+    .pvp-columns-2,.pvp-columns-3,.pvp-columns-4 { grid-template-columns: 1fr; }
+}
+@media (min-width:601px) and (max-width:900px) {
+    .pvp-columns-3,.pvp-columns-4 { grid-template-columns: repeat(2,1fr); }
+}
+.pvp-grid__item { display:flex; flex-direction:column; }
+/*.pvp-grid__player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}*/
+.pvp-grid__player .wp-block-protected-video-protected-video,
+.pvp-grid__player .plyr,
+.pvp-grid__player iframe {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+.pvp-grid__title {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+.pvp-error {
+    color: #c0392b;
+    font-style: italic;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid #c0392b;
+    background: #fdf0ee;
+    margin: 0.5rem 0;
+}
+
+.pvp-video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.pvp-video-wrapper .wp-block-protected-video-protected-video,
+.pvp-video-wrapper .plyr,
+.pvp-video-wrapper iframe {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+
+.pvp-video-wrapper.pvp-hide-volume .plyr__volume { display: none !important; }
+.pvp-video-wrapper.pvp-hide-controls .plyr__controls { display: none !important; }
+.pvp-video-wrapper.pvp-hide-fullscreen [data-plyr="fullscreen"] { display: none !important; }
+.pvp-video-wrapper.pvp-hide-playbutton [data-plyr="play"],
+.pvp-video-wrapper.pvp-hide-playbutton .plyr__control--overlaid { display: none !important; }
+
+.pvp-overlay-text {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+    /*text-align: center;*/
+    z-index: 9999;
+    color: var(--pvp-theme-color, #ff0000);
+    padding: 0.4rem 0.75rem;
+    pointer-events: none;
+    display: flex;
+    /*align-items: center;
+    justify-content: center;*/
+    flex-direction: column;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden; /* prevents spill */
+}
+.pvp-overlay-text img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain;
+}
+
+.plyr--video .plyr__controls {
+    padding-top: 10px !important;
+}
+
+.plyr__video-wrapper {
+    overflow: hidden; 
+}
+
+.pvp-pagination .dots {
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+}
+
+.pvp-pagination{
+    text-align: center;
+}
+
+.pvp-pagination .page-numbers {
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+    margin: 0 2px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--pvp-theme-color, #cc0000);
+}
+
+.pvp-pagination .page-numbers.current {
+    background: var(--pvp-theme-color, #cc0000);
+    color: #fff;
+    border-color: var(--pvp-theme-color, #000000);
+}
+
+.pvp-pagination .page-numbers.dots {
+    border: none;
+    background: transparent;
+}
+
+.pvp-pagination {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.pvp-pagination .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+}

@@ -1,0 +1,4 @@
+.pvp-api-key {
+    -webkit-text-security: disc;
+    text-security: disc; /* fallback */
+}
