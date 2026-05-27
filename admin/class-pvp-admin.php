@@ -50,7 +50,6 @@ function pvp_admin_assets( $hook ) {
         PVP_VERSION,
         true
     );
-    error_log( 'Alpha picker path: ' . PVP_PLUGIN_URL . 'admin/js/wp-color-picker-alpha.js' );
 }
 
 // ── Render settings page ──────────────────────────────────────────────────────
@@ -374,7 +373,6 @@ function pvp_render_checkbox_field( $args ) {
 
 // ── Sanitize settings ─────────────────────────────────────────────────────────
 function pvp_sanitize_settings( $input ) {
-    error_log( 'pvp_sanitize input: ' . print_r( $input, true ) );
     $output = array();
 
     if ( isset( $input['youtube_api_key'] ) ) {

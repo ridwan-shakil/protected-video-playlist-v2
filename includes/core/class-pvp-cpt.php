@@ -18,7 +18,7 @@ function pvp_enqueue_cpt_assets( $hook ) {
     wp_enqueue_media();
     wp_enqueue_script(
         'wp-color-picker-alpha',
-        PVP_PLUGIN_URL . 'admin/js/wp-color-picker-alpha.min.js',
+        PVP_PLUGIN_URL . 'admin/js/wp-color-picker-alpha.js',
         array( 'wp-color-picker' ),
         PVP_VERSION,
         true
@@ -865,49 +865,64 @@ function pvp_render_branding_meta_box( $post ) {
 add_action( 'save_post_pvp_video', 'pvp_save_video_meta' );
 
 function pvp_save_video_meta( $post_id ) {
-    if ( ! isset( $_POST['pvp_video_meta_nonce'] ) || ! wp_verify_nonce( $_POST['pvp_video_meta_nonce'], 'pvp_video_meta_nonce' ) ) {
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
         return;
     }
 
-    if ( isset( $_POST['pvp_video_logo'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo', esc_url_raw( $_POST['pvp_video_logo'] ) );
+    if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+        return;
     }
 
-    if ( isset( $_POST['pvp_video_logo_url'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_url', esc_url_raw( $_POST['pvp_video_logo_url'] ) );
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
     }
 
-    if ( isset( $_POST['pvp_video_logo_unit'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_unit', sanitize_text_field( $_POST['pvp_video_logo_unit'] ) );
+    $nonce = isset( $_POST['pvp_video_meta_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pvp_video_meta_nonce'] ) ) : '';
+    if ( ! $nonce || ! wp_verify_nonce( $nonce, 'pvp_video_meta_nonce' ) ) {
+        return;
+    }
+
+    $post_data = wp_unslash( $_POST );
+
+    if ( isset( $post_data['pvp_video_logo'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo', esc_url_raw( $post_data['pvp_video_logo'] ) );
+    }
+
+    if ( isset( $post_data['pvp_video_logo_url'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_url', esc_url_raw( $post_data['pvp_video_logo_url'] ) );
+    }
+
+    if ( isset( $post_data['pvp_video_logo_unit'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_unit', sanitize_text_field( $post_data['pvp_video_logo_unit'] ) );
     }
 
 
-    if ( isset( $_POST['pvp_video_logo_width'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_width', intval( $_POST['pvp_video_logo_width'] ) );
+    if ( isset( $post_data['pvp_video_logo_width'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_width', intval( $post_data['pvp_video_logo_width'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_logo_opacity'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_opacity', intval( $_POST['pvp_video_logo_opacity'] ) );
+    if ( isset( $post_data['pvp_video_logo_opacity'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_opacity', intval( $post_data['pvp_video_logo_opacity'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_logo_position'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_position', sanitize_text_field( $_POST['pvp_video_logo_position'] ) );
+    if ( isset( $post_data['pvp_video_logo_position'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_position', sanitize_text_field( $post_data['pvp_video_logo_position'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_logo_radius'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_radius', intval( $_POST['pvp_video_logo_radius'] ) );
+    if ( isset( $post_data['pvp_video_logo_radius'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_radius', intval( $post_data['pvp_video_logo_radius'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_logo_radius_unit'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_logo_radius_unit', sanitize_text_field( $_POST['pvp_video_logo_radius_unit'] ) );
+    if ( isset( $post_data['pvp_video_logo_radius_unit'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_logo_radius_unit', sanitize_text_field( $post_data['pvp_video_logo_radius_unit'] ) );
     }
 
-    update_post_meta( $post_id, '_pvp_video_logo_circle', isset( $_POST['pvp_video_logo_circle'] ) ? 1 : 0 );
+    update_post_meta( $post_id, '_pvp_video_logo_circle', isset( $post_data['pvp_video_logo_circle'] ) ? 1 : 0 );
     // update_post_meta( $post_id, '_pvp_video_logo_rounded', isset( $_POST['pvp_video_logo_rounded'] ) ? 1 : 0 );
     // update_post_meta( $post_id, '_pvp_video_logo_cropped', isset( $_POST['pvp_video_logo_cropped'] ) ? 1 : 0 );
 
-    if ( isset( $_POST['pvp_video_overlay_text'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_text', wp_kses_post( $_POST['pvp_video_overlay_text'] ) );
+    if ( isset( $post_data['pvp_video_overlay_text'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_text', wp_kses_post( $post_data['pvp_video_overlay_text'] ) );
     }
 
     // if ( isset( $_POST['pvp_video_overlay_start'] ) ) {
@@ -915,12 +930,12 @@ function pvp_save_video_meta( $post_id ) {
     // }
 
     if (
-        isset($_POST['pvp_video_overlay_start_h'], $_POST['pvp_video_overlay_start_m'], $_POST['pvp_video_overlay_start_s'])
+        isset($post_data['pvp_video_overlay_start_h'], $post_data['pvp_video_overlay_start_m'], $post_data['pvp_video_overlay_start_s'])
     ) {
         $seconds =
-            intval($_POST['pvp_video_overlay_start_h']) * 3600 +
-            intval($_POST['pvp_video_overlay_start_m']) * 60 +
-            intval($_POST['pvp_video_overlay_start_s']);
+            intval($post_data['pvp_video_overlay_start_h']) * 3600 +
+            intval($post_data['pvp_video_overlay_start_m']) * 60 +
+            intval($post_data['pvp_video_overlay_start_s']);
 
         update_post_meta($post_id, '_pvp_video_overlay_start', $seconds);
     }
@@ -929,41 +944,41 @@ function pvp_save_video_meta( $post_id ) {
     //     update_post_meta( $post_id, '_pvp_video_overlay_end', intval( $_POST['pvp_video_overlay_end'] ) );
     // }
     if (
-        isset($_POST['pvp_video_overlay_end_h'], $_POST['pvp_video_overlay_end_m'], $_POST['pvp_video_overlay_end_s'])
+        isset($post_data['pvp_video_overlay_end_h'], $post_data['pvp_video_overlay_end_m'], $post_data['pvp_video_overlay_end_s'])
     ) {
         $seconds =
-            intval($_POST['pvp_video_overlay_end_h']) * 3600 +
-            intval($_POST['pvp_video_overlay_end_m']) * 60 +
-            intval($_POST['pvp_video_overlay_end_s']);
+            intval($post_data['pvp_video_overlay_end_h']) * 3600 +
+            intval($post_data['pvp_video_overlay_end_m']) * 60 +
+            intval($post_data['pvp_video_overlay_end_s']);
 
         update_post_meta($post_id, '_pvp_video_overlay_end', $seconds);
     }
-    if ( isset( $_POST['pvp_video_overlay_height'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_height', intval( $_POST['pvp_video_overlay_height'] ) );
+    if ( isset( $post_data['pvp_video_overlay_height'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_height', intval( $post_data['pvp_video_overlay_height'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_overlay_width'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_width', intval( $_POST['pvp_video_overlay_width'] ) );
+    if ( isset( $post_data['pvp_video_overlay_width'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_width', intval( $post_data['pvp_video_overlay_width'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_overlay_x'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_x', intval( $_POST['pvp_video_overlay_x'] ) );
+    if ( isset( $post_data['pvp_video_overlay_x'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_x', intval( $post_data['pvp_video_overlay_x'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_overlay_y'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_y', intval( $_POST['pvp_video_overlay_y'] ) );
+    if ( isset( $post_data['pvp_video_overlay_y'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_y', intval( $post_data['pvp_video_overlay_y'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_overlay_padding'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_padding', intval( $_POST['pvp_video_overlay_padding'] ) );
+    if ( isset( $post_data['pvp_video_overlay_padding'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_padding', intval( $post_data['pvp_video_overlay_padding'] ) );
     }
 
-    if ( isset( $_POST['pvp_video_overlay_bg'] ) ) {
-        update_post_meta( $post_id, '_pvp_video_overlay_bg', pvp_sanitize_color( $_POST['pvp_video_overlay_bg'] ) );
+    if ( isset( $post_data['pvp_video_overlay_bg'] ) ) {
+        update_post_meta( $post_id, '_pvp_video_overlay_bg', pvp_sanitize_color( $post_data['pvp_video_overlay_bg'] ) );
     }
 
-    update_post_meta( $post_id, '_pvp_video_overlay_on_pause', isset( $_POST['pvp_video_overlay_on_pause'] ) ? 1 : 0 );
-    update_post_meta( $post_id, '_pvp_video_overlay_on_end',   isset( $_POST['pvp_video_overlay_on_end'] )   ? 1 : 0 );
+    update_post_meta( $post_id, '_pvp_video_overlay_on_pause', isset( $post_data['pvp_video_overlay_on_pause'] ) ? 1 : 0 );
+    update_post_meta( $post_id, '_pvp_video_overlay_on_end',   isset( $post_data['pvp_video_overlay_on_end'] )   ? 1 : 0 );
 
     
     // Save override controls — separate nonce check for controls meta box
@@ -979,7 +994,7 @@ function pvp_save_video_meta( $post_id ) {
             update_post_meta(
                 $post_id,
                 '_pvp_override_' . $key,
-                isset( $_POST[ 'pvp_override_' . $key ] ) ? 1 : 0
+                isset( $post_data[ 'pvp_override_' . $key ] ) ? 1 : 0
             );
         }
 
@@ -991,16 +1006,16 @@ function pvp_save_video_meta( $post_id ) {
     );
 
     foreach ( $branding_fields as $post_key => $meta_key ) {
-        if ( isset( $_POST[ $post_key ] ) ) {
-            update_post_meta( $post_id, $meta_key, pvp_sanitize_color( $_POST[ $post_key ] ) );
+        if ( isset( $post_data[ $post_key ] ) ) {
+            update_post_meta( $post_id, $meta_key, pvp_sanitize_color( $post_data[ $post_key ] ) );
         }
     }
 
-    update_post_meta( $post_id, '_pvp_video_logo_active',    isset( $_POST['pvp_video_logo_active'] )    ? 1 : 0 );
-    update_post_meta( $post_id, '_pvp_video_overlay_active', isset( $_POST['pvp_video_overlay_active'] ) ? 1 : 0 );
-    if ( isset( $_POST['pvp_time_ranges'] ) && is_array( $_POST['pvp_time_ranges'] ) ) {
+    update_post_meta( $post_id, '_pvp_video_logo_active',    isset( $post_data['pvp_video_logo_active'] )    ? 1 : 0 );
+    update_post_meta( $post_id, '_pvp_video_overlay_active', isset( $post_data['pvp_video_overlay_active'] ) ? 1 : 0 );
+    if ( isset( $post_data['pvp_time_ranges'] ) && is_array( $post_data['pvp_time_ranges'] ) ) {
         $time_ranges = array();
-        foreach ( $_POST['pvp_time_ranges'] as $range ) {
+        foreach ( $post_data['pvp_time_ranges'] as $range ) {
             $start = intval( $range['start_h'] ?? 0 ) * 3600 +
                      intval( $range['start_m'] ?? 0 ) * 60 +
                      intval( $range['start_s'] ?? 0 );

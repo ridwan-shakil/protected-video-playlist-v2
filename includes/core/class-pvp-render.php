@@ -358,29 +358,8 @@ function pvp_render_grid_from_url( $url, $columns, $cache, $overlay_text = '' ) 
         'fields'      => 'ids',
     ) );
 
-    // If no CPT posts exist, sync them now
     if ( empty( $existing_ids ) ) {
-        $options = get_option( 'pvp_settings', array() );
-        $api_key = ! empty( $options['youtube_api_key'] ) ? $options['youtube_api_key'] : null;
-
-        if ( ! empty( $api_key ) ) {
-            pvp_sync_via_api( $url, $api_key );
-        } else {
-            pvp_sync_via_rss( $url );
-        }
-
-        // Fetch IDs again after sync
-        $existing_ids = get_posts( array(
-            'post_type'   => 'pvp_video',
-            'meta_key'    => '_pvp_playlist_id',
-            'meta_value'  => $playlist_id,
-            'numberposts' => -1,
-            'fields'      => 'ids',
-        ) );
-    }
-
-    if ( empty( $existing_ids ) ) {
-        return '<p class="pvp-error">' . esc_html__( 'Protected Playlist: No videos found. Make sure the playlist is public.', 'protected-video-playlist' ) . '</p>';
+        return '<p class="pvp-error">' . esc_html__( 'Protected Playlist: No imported videos found for this playlist. Please import or sync this playlist from the WordPress admin area before displaying it on the frontend.', 'protected-video-playlist' ) . '</p>';
     }
 
     // Pagination

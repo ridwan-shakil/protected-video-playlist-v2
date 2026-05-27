@@ -13,7 +13,7 @@ function pvp_ajax_sync_playlist() {
         wp_send_json_error( __( 'Insufficient permissions.', 'protected-video-playlist' ) );
     }
 
-    $playlist_index = isset( $_POST['playlist_index'] ) ? intval( $_POST['playlist_index'] ) : 0;
+    $playlist_index = isset( $_POST['playlist_index'] ) ? intval( wp_unslash( $_POST['playlist_index'] ) ) : 0;
     $options        = get_option( 'pvp_settings', array() );
     $playlists      = isset( $options['playlists'] ) ? $options['playlists'] : array();
 
@@ -193,31 +193,57 @@ function pvp_sync_via_rss( $playlist_url ) {
 
 // ── Save videos as CPT posts ──────────────────────────────────────────────────
 function pvp_save_videos_as_cpt( $videos, $playlist_id ) {
-    // Delete old posts for this playlist
-    $old_posts = get_posts( array(
-        'post_type'  => 'pvp_video',
-        'meta_key'   => '_pvp_playlist_id',
-        'meta_value' => $playlist_id,
-        'numberposts' => -1,
-    ) );
-
-    foreach ( $old_posts as $post ) {
-        wp_delete_post( $post->ID, true );
-    }
-
-    // Create new posts
     foreach ( $videos as $video ) {
-        $post_id = wp_insert_post( array(
-            'post_type'   => 'pvp_video',
-            'post_title'  => $video['title'],
-            'post_status' => 'publish',
+        if ( empty( $video['video_id'] ) ) {
+            continue;
+        }
+
+        $video_id  = sanitize_text_field( $video['video_id'] );
+        $title     = isset( $video['title'] ) ? sanitize_text_field( $video['title'] ) : '';
+        $video_url = isset( $video['url'] ) ? esc_url_raw( $video['url'] ) : '';
+        $thumbnail = isset( $video['thumbnail'] ) ? esc_url_raw( $video['thumbnail'] ) : '';
+
+        $existing_posts = get_posts( array(
+            'post_type'      => 'pvp_video',
+            'post_status'    => 'any',
+            'fields'         => 'ids',
+            'numberposts'    => 1,
+            'meta_query'     => array(
+                'relation' => 'AND',
+                array(
+                    'key'   => '_pvp_playlist_id',
+                    'value' => $playlist_id,
+                ),
+                array(
+                    'key'   => '_pvp_video_id',
+                    'value' => $video_id,
+                ),
+            ),
         ) );
 
-        if ( ! is_wp_error( $post_id ) ) {
-            update_post_meta( $post_id, '_pvp_video_id', $video['video_id'] );
-            update_post_meta( $post_id, '_pvp_video_url', $video['url'] );
+        $post_id = ! empty( $existing_posts ) ? absint( $existing_posts[0] ) : 0;
+
+        if ( $post_id ) {
+            $current_title = get_the_title( $post_id );
+            if ( $title && $title !== $current_title ) {
+                wp_update_post( array(
+                    'ID'         => $post_id,
+                    'post_title' => $title,
+                ) );
+            }
+        } else {
+            $post_id = wp_insert_post( array(
+                'post_type'   => 'pvp_video',
+                'post_title'  => $title,
+                'post_status' => 'publish',
+            ) );
+        }
+
+        if ( $post_id && ! is_wp_error( $post_id ) ) {
+            update_post_meta( $post_id, '_pvp_video_id', $video_id );
+            update_post_meta( $post_id, '_pvp_video_url', $video_url );
             update_post_meta( $post_id, '_pvp_playlist_id', $playlist_id );
-            update_post_meta( $post_id, '_pvp_thumbnail_url', $video['thumbnail'] );
+            update_post_meta( $post_id, '_pvp_thumbnail_url', $thumbnail );
         }
     }
 }
