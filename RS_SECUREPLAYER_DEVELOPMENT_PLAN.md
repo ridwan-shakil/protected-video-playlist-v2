@@ -624,3 +624,7 @@ Phase 5 is complete when frontend rendering is centralized behind an RS renderer
 ## 20. Phase 6 Completion Notes
 
 Phase 6 is complete when campaigns are stored as `rsplr_campaign` entities, admins can create/edit intro/main/outro single-video campaigns, main video is required, saved campaign shortcodes are shown in the Campaigns page, and `[rsplr_campaign id="..."]` renders campaign queue data plus the first playable video for the upcoming frontend player engine.
+
+## 21. Phase 7 Completion Notes
+
+Phase 7 is complete when campaign output exposes a scoped queue state, only the active intro/main/outro segment is visible, frontend JavaScript advances the campaign from intro to main to outro when Plyr reports the active segment has ended, and manual previous/next controls operate per campaign instance without changing the existing protected-video wrapper markup.

@@ -171,5 +171,223 @@ document.addEventListener('fullscreenchange', function () {
     });
 });
 
+    // ── Campaign queue playback ─────────────────────────────────────────
+    function initCampaign( campaign ) {
+        var items = Array.prototype.slice.call( campaign.querySelectorAll( ".rsplr-campaign__item" ) );
+        var queue = [];
+        var currentIndex = 0;
+        var stateObserver = null;
+        var initObserver = null;
+        var endedLock = false;
+
+        if ( items.length < 1 || campaign.dataset.rsplrCampaignReady === "1" ) {
+            return;
+        }
+
+        campaign.dataset.rsplrCampaignReady = "1";
+
+        try {
+            queue = JSON.parse( campaign.dataset.rsplrCampaignQueue || "[]" );
+        } catch ( e ) {
+            queue = [];
+        }
+
+        function getLabel( index ) {
+            var item = queue[index] || {};
+            var role = item.role || ( items[index] ? items[index].dataset.rsplrCampaignRole : "" );
+            var title = item.title || "";
+            var label = role ? role.charAt( 0 ).toUpperCase() + role.slice( 1 ) : "Video";
+
+            return title ? label + ": " + title : label;
+        }
+
+        function stopObservers() {
+            if ( stateObserver ) {
+                stateObserver.disconnect();
+                stateObserver = null;
+            }
+
+            if ( initObserver ) {
+                initObserver.disconnect();
+                initObserver = null;
+            }
+        }
+
+        function tryPlay( item ) {
+            var playButton = item.querySelector( ".plyr__control--overlaid, [data-plyr='play']" );
+            var iframe = item.querySelector( "iframe" );
+
+            if ( playButton ) {
+                playButton.click();
+                return;
+            }
+
+            if ( iframe && iframe.src && iframe.src.indexOf( "autoplay=1" ) === -1 ) {
+                if ( iframe.src.indexOf( "autoplay=0" ) !== -1 ) {
+                    iframe.src = iframe.src.replace( "autoplay=0", "autoplay=1" );
+                } else {
+                    iframe.src += iframe.src.indexOf( "?" ) === -1 ? "?autoplay=1" : "&autoplay=1";
+                }
+            }
+        }
+
+        function stopItem( item ) {
+            var plyrEl = item.querySelector( ".plyr" );
+            var playButton = item.querySelector( "[data-plyr='play']" );
+
+            if ( plyrEl && playButton && plyrEl.classList.contains( "plyr--playing" ) ) {
+                playButton.click();
+            }
+        }
+
+        function updateControls() {
+            var status = campaign.querySelector( ".rsplr-campaign__status" );
+            var prev = campaign.querySelector( "[data-rsplr-campaign-prev]" );
+            var next = campaign.querySelector( "[data-rsplr-campaign-next]" );
+
+            if ( status ) {
+                status.textContent = getLabel( currentIndex );
+            }
+
+            if ( prev ) {
+                prev.disabled = currentIndex <= 0;
+            }
+
+            if ( next ) {
+                next.disabled = currentIndex >= items.length - 1;
+            }
+        }
+
+        function watchCurrentItem() {
+            var item = items[currentIndex];
+
+            stopObservers();
+
+            function attach( plyrEl ) {
+                if ( ! plyrEl ) {
+                    return false;
+                }
+
+                stateObserver = new MutationObserver( function () {
+                    if ( ! endedLock && plyrEl.classList.contains( "plyr--ended" ) ) {
+                        endedLock = true;
+
+                        if ( currentIndex < items.length - 1 ) {
+                            activate( currentIndex + 1, true );
+                        }
+                    }
+                } );
+
+                stateObserver.observe( plyrEl, {
+                    attributes: true,
+                    attributeFilter: ["class"]
+                } );
+
+                return true;
+            }
+
+            if ( attach( item.querySelector( ".plyr" ) ) ) {
+                return;
+            }
+
+            initObserver = new MutationObserver( function () {
+                var plyrEl = item.querySelector( ".plyr" );
+
+                if ( attach( plyrEl ) ) {
+                    initObserver.disconnect();
+                    initObserver = null;
+                }
+            } );
+
+            initObserver.observe( item, { childList: true, subtree: true } );
+        }
+
+        function activate( index, autoplay ) {
+            var previousItem;
+
+            if ( index < 0 || index >= items.length ) {
+                return;
+            }
+
+            previousItem = items[currentIndex];
+
+            if ( previousItem && index !== currentIndex ) {
+                stopItem( previousItem );
+            }
+
+            currentIndex = index;
+            endedLock = false;
+            campaign.dataset.rsplrCampaignCurrent = String( currentIndex );
+
+            items.forEach( function ( item, itemIndex ) {
+                var active = itemIndex === currentIndex;
+
+                item.classList.toggle( "is-active", active );
+
+                if ( active ) {
+                    item.removeAttribute( "hidden" );
+                } else {
+                    item.setAttribute( "hidden", "hidden" );
+                }
+            } );
+
+            updateControls();
+            watchCurrentItem();
+
+            if ( autoplay ) {
+                window.setTimeout( function () {
+                    tryPlay( items[currentIndex] );
+                }, 300 );
+            }
+        }
+
+        function addControls() {
+            var controls;
+            var status;
+            var prev;
+            var next;
+
+            if ( items.length < 2 || campaign.querySelector( ".rsplr-campaign__controls" ) ) {
+                return;
+            }
+
+            controls = document.createElement( "div" );
+            controls.className = "rsplr-campaign__controls";
+
+            status = document.createElement( "span" );
+            status.className = "rsplr-campaign__status";
+
+            prev = document.createElement( "button" );
+            prev.type = "button";
+            prev.className = "rsplr-campaign__button";
+            prev.dataset.rsplrCampaignPrev = "1";
+            prev.textContent = "Previous";
+
+            next = document.createElement( "button" );
+            next.type = "button";
+            next.className = "rsplr-campaign__button";
+            next.dataset.rsplrCampaignNext = "1";
+            next.textContent = "Next";
+
+            prev.addEventListener( "click", function () {
+                activate( currentIndex - 1, false );
+            } );
+
+            next.addEventListener( "click", function () {
+                activate( currentIndex + 1, false );
+            } );
+
+            controls.appendChild( status );
+            controls.appendChild( prev );
+            controls.appendChild( next );
+            campaign.appendChild( controls );
+        }
+
+        addControls();
+        activate( 0, false );
+    }
+
+    document.querySelectorAll( ".rsplr-campaign" ).forEach( initCampaign );
+
 } );
 

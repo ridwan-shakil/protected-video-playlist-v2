@@ -179,17 +179,25 @@ final class Renderer {
 		}
 
 		$output = '';
+		$index  = 0;
 
 		foreach ( $queue as $item ) {
+			$is_active = 0 === $index;
+
 			$output .= sprintf(
-				'<div class="rsplr-campaign__item rsplr-campaign__item--%1$s" data-rsplr-campaign-role="%1$s">%2$s</div>',
+				'<div class="rsplr-campaign__item rsplr-campaign__item--%1$s%2$s" data-rsplr-campaign-role="%1$s" data-rsplr-campaign-index="%3$d"%4$s>%5$s</div>',
 				esc_attr( $item['role'] ),
+				$is_active ? ' is-active' : '',
+				absint( $index ),
+				$is_active ? '' : ' hidden',
 				pvp_render_single_video( $item['url'], '', $item['id'] )
 			);
+
+			$index++;
 		}
 
 		return sprintf(
-			'<div class="rsplr-campaign" data-campaign-id="%1$d" data-rsplr-campaign-queue="%2$s">%3$s</div>',
+			'<div class="rsplr-campaign" data-campaign-id="%1$d" data-rsplr-campaign-current="0" data-rsplr-campaign-queue="%2$s">%3$s</div>',
 			absint( $campaign['id'] ),
 			esc_attr( wp_json_encode( $queue ) ),
 			$output
