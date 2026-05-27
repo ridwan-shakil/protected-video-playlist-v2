@@ -77,7 +77,7 @@ final class ShortcodeRegistrar {
 			'rsplr_playlist'
 		);
 
-		return $this->renderer->playlist( absint( $atts['id'] ), $atts );
+		return $this->renderer->playlist( sanitize_text_field( $atts['id'] ), $atts );
 	}
 
 	/**

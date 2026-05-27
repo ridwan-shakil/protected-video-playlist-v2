@@ -73,14 +73,14 @@ final class SettingsPage {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'RS SecurePlayer Settings', 'protected-video-playlist' ); ?></h1>
-			<nav class="nav-tab-wrapper" style="margin-bottom:16px;">
+			<nav class="nav-tab-wrapper" >
 				<?php $this->tab_link( 'branding', __( 'Branding', 'protected-video-playlist' ), true ); ?>
 				<?php $this->tab_link( 'overlay', __( 'Overlay', 'protected-video-playlist' ), false ); ?>
 				<?php $this->tab_link( 'protection', __( 'Protection', 'protected-video-playlist' ), false ); ?>
 				<?php $this->tab_link( 'playback', __( 'Playback', 'protected-video-playlist' ), false ); ?>
 			</nav>
 
-			<form method="post" action="options.php">
+			<form method="post" action="options.php" id="rsplr_settings">
 				<?php settings_fields( 'pvp_settings_group' ); ?>
 				<?php $this->render_tab_panel( 'branding', true ); ?>
 				<?php $this->render_tab_panel( 'overlay', false ); ?>

@@ -8,11 +8,17 @@ function pvp_enqueue_frontend_styles() {
 		return;
 	}
 
+	$elementor_data = get_post_meta( $post->ID, '_elementor_data', true );
+	$search_content = $post->post_content . ' ' . ( is_string( $elementor_data ) ? $elementor_data : '' );
+
 	$has_block     = has_block( 'protected-video-playlist/playlist', $post->ID );
-	$has_shortcode = has_shortcode( $post->post_content, 'protected_playlist' );
-	$has_rs_shortcode = has_shortcode( $post->post_content, 'rsplr_video' ) ||
-		has_shortcode( $post->post_content, 'rsplr_playlist' ) ||
-		has_shortcode( $post->post_content, 'rsplr_campaign' );
+	$has_shortcode = has_shortcode( $search_content, 'protected_playlist' );
+	$has_rs_shortcode = has_shortcode( $search_content, 'rsplr_video' ) ||
+		has_shortcode( $search_content, 'rsplr_playlist' ) ||
+		has_shortcode( $search_content, 'rsplr_campaign' ) ||
+		false !== strpos( $search_content, 'rsplr_video' ) ||
+		false !== strpos( $search_content, 'rsplr_playlist' ) ||
+		false !== strpos( $search_content, 'rsplr_campaign' );
 	$has_parent    = has_block( 'protected-video/protected-video', $post->ID );
 
 	if ( ! $has_block && ! $has_shortcode && ! $has_rs_shortcode && ! $has_parent ) {

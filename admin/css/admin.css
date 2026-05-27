@@ -2,3 +2,15 @@
     -webkit-text-security: disc;
     text-security: disc; /* fallback */
 }
+
+/* custom css for RS settings page  */
+form#rsplr_settings {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+a.nav-tab.nav-tab-active {
+    background: white;
+    border-radius: 5px 5px 0 0;
+}

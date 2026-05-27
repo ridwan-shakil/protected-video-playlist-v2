@@ -10,11 +10,14 @@ namespace RSPLR\Core;
 use RSPLR\Settings\SettingsRepository;
 use RSPLR\Repository\VideoRepository;
 use RSPLR\Repository\PlaylistRepository;
+use RSPLR\Repository\CampaignRepository;
 use RSPLR\Admin\AdminMenu;
+use RSPLR\Admin\CampaignsPage;
 use RSPLR\Admin\VideoLibraryColumns;
 use RSPLR\Admin\PlaylistImportsPage;
 use RSPLR\Admin\SettingsPage;
 use RSPLR\Ajax\PlaylistImportAjax;
+use RSPLR\CPT\CampaignPostType;
 use RSPLR\CPT\PlaylistPostType;
 use RSPLR\Import\PlaylistImporter;
 use RSPLR\Import\YouTubeClient;
@@ -53,6 +56,13 @@ final class Plugin {
 	 * @var PlaylistRepository|null
 	 */
 	private $playlists = null;
+
+	/**
+	 * Campaign repository.
+	 *
+	 * @var CampaignRepository|null
+	 */
+	private $campaigns = null;
 
 	/**
 	 * Playlist importer.
@@ -123,6 +133,19 @@ final class Plugin {
 	}
 
 	/**
+	 * Get campaign repository.
+	 *
+	 * @return CampaignRepository
+	 */
+	public function campaigns() {
+		if ( null === $this->campaigns ) {
+			$this->campaigns = new CampaignRepository();
+		}
+
+		return $this->campaigns;
+	}
+
+	/**
 	 * Get playlist importer.
 	 *
 	 * @return PlaylistImporter
@@ -146,7 +169,7 @@ final class Plugin {
 	 */
 	public function renderer() {
 		if ( null === $this->renderer ) {
-			$this->renderer = new Renderer( $this->videos(), $this->playlists() );
+			$this->renderer = new Renderer( $this->videos(), $this->playlists(), $this->campaigns() );
 		}
 
 		return $this->renderer;
@@ -182,11 +205,13 @@ final class Plugin {
 	 */
 	private function register_rs_components() {
 		( new PlaylistPostType() )->register();
+		( new CampaignPostType() )->register();
 		( new PlaylistImportAjax( $this->playlist_importer() ) )->register();
 		( new ShortcodeRegistrar( $this->renderer() ) )->register();
 
 		if ( is_admin() ) {
 			( new AdminMenu( $this->playlists() ) )->register();
+			( new CampaignsPage( $this->campaigns(), $this->videos() ) )->register();
 			( new VideoLibraryColumns() )->register();
 			( new PlaylistImportsPage( $this->playlists() ) )->register();
 			( new SettingsPage() )->register();

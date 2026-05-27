@@ -620,3 +620,7 @@ Phase 4 is complete when the admin experience is consolidated under the `RS Prot
 ## 19. Phase 5 Completion Notes
 
 Phase 5 is complete when frontend rendering is centralized behind an RS renderer service, `[rsplr_video]`, `[rsplr_playlist]`, and `[rsplr_campaign]` are registered, legacy block and `[protected_playlist]` rendering delegate through the same renderer, and frontend assets load when RS shortcodes are present.
+
+## 20. Phase 6 Completion Notes
+
+Phase 6 is complete when campaigns are stored as `rsplr_campaign` entities, admins can create/edit intro/main/outro single-video campaigns, main video is required, saved campaign shortcodes are shown in the Campaigns page, and `[rsplr_campaign id="..."]` renders campaign queue data plus the first playable video for the upcoming frontend player engine.

@@ -79,6 +79,32 @@ final class PlaylistRepository {
 	}
 
 	/**
+	 * Resolve a playlist by numeric post ID or external playlist ID.
+	 *
+	 * @param int|string $identifier Playlist post ID or external playlist ID.
+	 * @return array<string, mixed>|null
+	 */
+	public function get_by_identifier( $identifier ) {
+		if ( is_numeric( $identifier ) ) {
+			$playlist = $this->get( absint( $identifier ) );
+
+			if ( $playlist ) {
+				return $playlist;
+			}
+		}
+
+		$external_id = sanitize_text_field( (string) $identifier );
+
+		if ( '' === $external_id ) {
+			return null;
+		}
+
+		$post_id = $this->find_by_external_id( $external_id );
+
+		return $post_id ? $this->get( $post_id ) : null;
+	}
+
+	/**
 	 * Return all playlist entities.
 	 *
 	 * @return \WP_Post[]

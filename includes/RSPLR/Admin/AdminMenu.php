@@ -68,15 +68,6 @@ final class AdminMenu {
 
 		add_submenu_page(
 			self::MENU_SLUG,
-			__( 'Campaigns', 'protected-video-playlist' ),
-			__( 'Campaigns', 'protected-video-playlist' ),
-			'manage_options',
-			'rsplr-campaigns',
-			array( $this, 'render_campaigns_placeholder' )
-		);
-
-		add_submenu_page(
-			self::MENU_SLUG,
 			__( 'Video Library', 'protected-video-playlist' ),
 			__( 'Video Library', 'protected-video-playlist' ),
 			'manage_options',
@@ -131,23 +122,6 @@ final class AdminMenu {
 				<a class="button" href="<?php echo esc_url( admin_url( 'edit.php?post_type=pvp_video' ) ); ?>"><?php esc_html_e( 'Open Video Library', 'protected-video-playlist' ); ?></a>
 				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=rsplr-settings' ) ); ?>"><?php esc_html_e( 'Open Settings', 'protected-video-playlist' ); ?></a>
 			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render campaigns placeholder until Phase 6.
-	 *
-	 * @return void
-	 */
-	public function render_campaigns_placeholder() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<div class="wrap">
-			<h1><?php esc_html_e( 'Campaigns', 'protected-video-playlist' ); ?></h1>
-			<p><?php esc_html_e( 'Campaign management is scheduled for Phase 6. This page is reserved so the final admin navigation is already stable.', 'protected-video-playlist' ); ?></p>
 		</div>
 		<?php
 	}

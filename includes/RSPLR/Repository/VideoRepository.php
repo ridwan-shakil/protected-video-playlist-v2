@@ -130,6 +130,24 @@ final class VideoRepository {
 	}
 
 	/**
+	 * Return videos for admin selectors.
+	 *
+	 * @return \WP_Post[]
+	 */
+	public function all() {
+		return get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_status'    => 'publish',
+				'numberposts'    => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'no_found_rows'  => true,
+			)
+		);
+	}
+
+	/**
 	 * Upsert a remotely hosted video while preserving customization meta.
 	 *
 	 * @param array<string, mixed> $video Source metadata.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Protected Video – Playlist Add-on
+ * Plugin Name: RS SecurePlayer
  * Description: Extends the Protected Video block to support YouTube playlists.
  * Version:     2.0.0
  * Requires Plugins: protected-video
@@ -107,6 +107,12 @@ if ( ! function_exists( 'rsplr_playlists' ) ) {
 if ( ! function_exists( 'rsplr_playlist_importer' ) ) {
 	function rsplr_playlist_importer() {
 		return rsplr_plugin()->playlist_importer();
+	}
+}
+
+if ( ! function_exists( 'rsplr_campaigns' ) ) {
+	function rsplr_campaigns() {
+		return rsplr_plugin()->campaigns();
 	}
 }
 

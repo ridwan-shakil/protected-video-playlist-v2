@@ -133,6 +133,7 @@ final class PlaylistImportsPage {
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Name', 'protected-video-playlist' ); ?></th>
+						<th><?php esc_html_e( 'Shortcode', 'protected-video-playlist' ); ?></th>
 						<th><?php esc_html_e( 'Playlist ID', 'protected-video-playlist' ); ?></th>
 						<th><?php esc_html_e( 'Method', 'protected-video-playlist' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'protected-video-playlist' ); ?></th>
@@ -144,13 +145,14 @@ final class PlaylistImportsPage {
 				<tbody id="rsplr-playlist-imports-table">
 					<?php if ( empty( $playlists ) ) : ?>
 						<tr>
-							<td colspan="7"><?php esc_html_e( 'No playlists have been imported yet.', 'protected-video-playlist' ); ?></td>
+							<td colspan="8"><?php esc_html_e( 'No playlists have been imported yet.', 'protected-video-playlist' ); ?></td>
 						</tr>
 					<?php else : ?>
 						<?php foreach ( $playlists as $playlist_post ) : ?>
 							<?php $playlist = $this->playlists->get( $playlist_post->ID ); ?>
 							<tr>
 								<td><?php echo esc_html( $playlist['name'] ); ?></td>
+								<td><code><?php echo esc_html( '[rsplr_playlist id="' . $playlist['id'] . '" layout="grid" columns="3"]' ); ?></code></td>
 								<td><code><?php echo esc_html( $playlist['playlist_id'] ); ?></code></td>
 								<td><?php echo esc_html( strtoupper( $playlist['import_method'] ?: '-' ) ); ?></td>
 								<td><?php echo esc_html( ucfirst( $playlist['status'] ) ); ?></td>

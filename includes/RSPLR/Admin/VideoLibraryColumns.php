@@ -38,6 +38,7 @@ final class VideoLibraryColumns {
 
 			if ( 'title' === $key ) {
 				$new['rsplr_thumbnail'] = __( 'Thumbnail', 'protected-video-playlist' );
+				$new['rsplr_shortcode'] = __( 'Shortcode', 'protected-video-playlist' );
 				$new['rsplr_provider']  = __( 'Provider', 'protected-video-playlist' );
 				$new['rsplr_video_id']  = __( 'Video ID', 'protected-video-playlist' );
 				$new['rsplr_playlist']  = __( 'Playlist', 'protected-video-playlist' );
@@ -67,6 +68,10 @@ final class VideoLibraryColumns {
 				} else {
 					echo '&mdash;';
 				}
+				break;
+
+			case 'rsplr_shortcode':
+				echo '<code>' . esc_html( '[rsplr_video id="' . absint( $post_id ) . '"]' ) . '</code>';
 				break;
 
 			case 'rsplr_provider':
