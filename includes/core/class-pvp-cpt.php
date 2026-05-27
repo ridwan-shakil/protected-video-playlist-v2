@@ -38,11 +38,19 @@ add_action( 'init', 'pvp_register_video_cpt' );
 
 function pvp_register_video_cpt() {
     $args = array(
-        'label'              => __( 'Playlist Videos', 'protected-video-playlist' ),
+        'labels'             => array(
+            'name'          => __( 'Video Library', 'protected-video-playlist' ),
+            'singular_name' => __( 'Video', 'protected-video-playlist' ),
+            'menu_name'     => __( 'Video Library', 'protected-video-playlist' ),
+            'add_new_item'  => __( 'Add New Video', 'protected-video-playlist' ),
+            'edit_item'     => __( 'Edit Video', 'protected-video-playlist' ),
+            'search_items'  => __( 'Search Videos', 'protected-video-playlist' ),
+            'not_found'     => __( 'No videos found.', 'protected-video-playlist' ),
+        ),
         'public'             => false,
         'publicly_queryable' => false,
         'show_ui'            => true,
-        'show_in_menu'       => true,
+        'show_in_menu'       => false,
         'supports'           => array( 'title' ),
         'has_archive'        => false,
         'rewrite'            => false,

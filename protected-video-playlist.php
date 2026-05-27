@@ -109,3 +109,9 @@ if ( ! function_exists( 'rsplr_playlist_importer' ) ) {
 		return rsplr_plugin()->playlist_importer();
 	}
 }
+
+if ( ! function_exists( 'rsplr_renderer' ) ) {
+	function rsplr_renderer() {
+		return rsplr_plugin()->renderer();
+	}
+}

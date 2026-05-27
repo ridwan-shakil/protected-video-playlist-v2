@@ -106,6 +106,30 @@ final class VideoRepository {
 	}
 
 	/**
+	 * Read one video source record.
+	 *
+	 * @param int $post_id Video post ID.
+	 * @return array<string, mixed>|null
+	 */
+	public function get( $post_id ) {
+		$post = get_post( $post_id );
+
+		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
+			return null;
+		}
+
+		return array(
+			'id'          => absint( $post->ID ),
+			'title'       => $post->post_title,
+			'provider'    => get_post_meta( $post->ID, '_pvp_provider', true ) ?: 'youtube',
+			'video_id'    => get_post_meta( $post->ID, '_pvp_video_id', true ),
+			'url'         => get_post_meta( $post->ID, '_pvp_video_url', true ),
+			'playlist_id' => get_post_meta( $post->ID, '_pvp_playlist_id', true ),
+			'thumbnail'   => get_post_meta( $post->ID, '_pvp_thumbnail_url', true ),
+		);
+	}
+
+	/**
 	 * Upsert a remotely hosted video while preserving customization meta.
 	 *
 	 * @param array<string, mixed> $video Source metadata.

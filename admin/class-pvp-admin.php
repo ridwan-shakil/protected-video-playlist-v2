@@ -373,13 +373,17 @@ function pvp_render_checkbox_field( $args ) {
 
 // ── Sanitize settings ─────────────────────────────────────────────────────────
 function pvp_sanitize_settings( $input ) {
-    $output = array();
+    $existing   = get_option( 'pvp_settings', array() );
+    $output     = is_array( $existing ) ? $existing : array();
+    $active_tab = isset( $input['_active_tab'] ) ? sanitize_key( $input['_active_tab'] ) : '';
 
     if ( isset( $input['youtube_api_key'] ) ) {
         $output['youtube_api_key'] = sanitize_text_field( $input['youtube_api_key'] );
     }
 
-    $output['delete_on_uninstall'] = isset( $input['delete_on_uninstall'] ) ? 1 : 0;
+    if ( '' === $active_tab || 'playback' === $active_tab ) {
+        $output['delete_on_uninstall'] = isset( $input['delete_on_uninstall'] ) ? 1 : 0;
+    }
     
     if ( isset( $input['default_columns'] ) ) {
         $output['default_columns'] = max( 1, min( 4, intval( $input['default_columns'] ) ) );
@@ -400,11 +404,15 @@ if ( isset( $input['logo_opacity'] ) )     { $output['logo_opacity']     = max( 
 if ( isset( $input['logo_position'] ) )    { $output['logo_position']    = sanitize_text_field( $input['logo_position'] ); }
 if ( isset( $input['logo_radius'] ) )      { $output['logo_radius']      = intval( $input['logo_radius'] ); }
 if ( isset( $input['logo_radius_unit'] ) ) { $output['logo_radius_unit'] = sanitize_text_field( $input['logo_radius_unit'] ); }
-$output['logo_circle'] = isset( $input['logo_circle'] ) ? 1 : 0;
+if ( '' === $active_tab || 'branding' === $active_tab ) {
+    $output['logo_circle'] = isset( $input['logo_circle'] ) ? 1 : 0;
+}
 
 // Overlay settings
-$output['overlay_on_pause'] = isset( $input['overlay_on_pause'] ) ? 1 : 0;
-$output['overlay_on_end']   = isset( $input['overlay_on_end'] )   ? 1 : 0;
+if ( '' === $active_tab || 'overlay' === $active_tab ) {
+    $output['overlay_on_pause'] = isset( $input['overlay_on_pause'] ) ? 1 : 0;
+    $output['overlay_on_end']   = isset( $input['overlay_on_end'] )   ? 1 : 0;
+}
 if ( isset( $input['overlay_width'] ) )   { $output['overlay_width']   = intval( $input['overlay_width'] ); }
 if ( isset( $input['overlay_height'] ) )  { $output['overlay_height']  = intval( $input['overlay_height'] ); }
 if ( isset( $input['overlay_x'] ) )       { $output['overlay_x']       = intval( $input['overlay_x'] ); }
@@ -428,13 +436,28 @@ if ( isset( $input['overlay_time_ranges'] ) && is_array( $input['overlay_time_ra
         $output['overlay_text'] = wp_kses_post( $input['overlay_text'] );
     }
 
-    $checkboxes = array(
-        'disable_volume',
-        'disable_playbutton',
-        'disable_fullscreen',
-        'disable_controls',
-        'disable_autoplay',
-    );
+    $checkboxes = array();
+
+    if ( '' === $active_tab ) {
+        $checkboxes = array(
+            'disable_volume',
+            'disable_playbutton',
+            'disable_fullscreen',
+            'disable_controls',
+            'disable_autoplay',
+        );
+    } elseif ( 'protection' === $active_tab ) {
+        $checkboxes = array(
+            'disable_volume',
+            'disable_playbutton',
+            'disable_fullscreen',
+            'disable_controls',
+        );
+    } elseif ( 'playback' === $active_tab ) {
+        $checkboxes = array(
+            'disable_autoplay',
+        );
+    }
 
     foreach ( $checkboxes as $cb ) {
         $output[ $cb ] = isset( $input[ $cb ] ) ? 1 : 0;

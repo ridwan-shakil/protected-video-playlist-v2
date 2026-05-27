@@ -12,6 +12,16 @@ function pvp_render_shortcode( $atts ) {
 		'protected_playlist'
 	);
 
+	if ( function_exists( 'rsplr_renderer' ) ) {
+		return rsplr_renderer()->url(
+			sanitize_text_field( $atts['url'] ),
+			array(
+				'columns' => intval( $atts['columns'] ),
+				'cache'   => intval( $atts['cache'] ),
+			)
+		);
+	}
+
 	return pvp_render_block(
 		array(
 			'url'     => sanitize_text_field( $atts['url'] ),

@@ -42,24 +42,9 @@ final class PlaylistImportsPage {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
-	/**
-	 * Register temporary Phase 3 menu.
-	 *
-	 * @return void
-	 */
 	public function register_menu() {
-		add_menu_page(
-			__( 'RS Protected Video', 'protected-video-playlist' ),
-			__( 'RS Protected Video', 'protected-video-playlist' ),
-			'manage_options',
-			self::MENU_SLUG,
-			array( $this, 'render' ),
-			'dashicons-video-alt3',
-			56
-		);
-
 		add_submenu_page(
-			self::MENU_SLUG,
+			AdminMenu::MENU_SLUG,
 			__( 'Playlist Imports', 'protected-video-playlist' ),
 			__( 'Playlist Imports', 'protected-video-playlist' ),
 			'manage_options',

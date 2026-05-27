@@ -612,3 +612,11 @@ Phase 2 is complete when imported videos have a repository abstraction around th
 ## 17. Phase 3 Completion Notes
 
 Phase 3 is complete when playlists are first-class `rsplr_playlist` entities, admins can enter a playlist URL and name from the Playlist Imports page, AJAX can start and continue imports from one click, YouTube API imports process one page per request, RSS fallback is automatic, and imported videos continue to upsert into the existing video library without deleting customizations.
+
+## 18. Phase 4 Completion Notes
+
+Phase 4 is complete when the admin experience is consolidated under the `RS Protected Video` top-level menu with Dashboard, Campaigns, Video Library, Playlist Imports, and Settings. The new settings screen uses Branding, Overlay, Protection, and Playback tabs while continuing to save the existing `pvp_settings` option for compatibility. The legacy settings page may remain available during migration.
+
+## 19. Phase 5 Completion Notes
+
+Phase 5 is complete when frontend rendering is centralized behind an RS renderer service, `[rsplr_video]`, `[rsplr_playlist]`, and `[rsplr_campaign]` are registered, legacy block and `[protected_playlist]` rendering delegate through the same renderer, and frontend assets load when RS shortcodes are present.

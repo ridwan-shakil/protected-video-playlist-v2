@@ -58,6 +58,16 @@ function pvp_render_block( $attributes ) {
         return '';
     }
 
+    if ( function_exists( 'rsplr_renderer' ) ) {
+        return rsplr_renderer()->url(
+            $url,
+            array(
+                'columns' => $columns,
+                'cache'   => $cache,
+            )
+        );
+    }
+
     if ( pvp_is_playlist_url( $url ) ) {
         return pvp_render_grid_from_url( $url, $columns, $cache );
     }

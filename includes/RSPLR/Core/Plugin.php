@@ -10,12 +10,16 @@ namespace RSPLR\Core;
 use RSPLR\Settings\SettingsRepository;
 use RSPLR\Repository\VideoRepository;
 use RSPLR\Repository\PlaylistRepository;
+use RSPLR\Admin\AdminMenu;
 use RSPLR\Admin\VideoLibraryColumns;
 use RSPLR\Admin\PlaylistImportsPage;
+use RSPLR\Admin\SettingsPage;
 use RSPLR\Ajax\PlaylistImportAjax;
 use RSPLR\CPT\PlaylistPostType;
 use RSPLR\Import\PlaylistImporter;
 use RSPLR\Import\YouTubeClient;
+use RSPLR\Rendering\Renderer;
+use RSPLR\Shortcode\ShortcodeRegistrar;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -56,6 +60,13 @@ final class Plugin {
 	 * @var PlaylistImporter|null
 	 */
 	private $playlist_importer = null;
+
+	/**
+	 * Frontend renderer.
+	 *
+	 * @var Renderer|null
+	 */
+	private $renderer = null;
 
 	/**
 	 * Initialize the current compatibility layer.
@@ -129,6 +140,19 @@ final class Plugin {
 	}
 
 	/**
+	 * Get frontend renderer.
+	 *
+	 * @return Renderer
+	 */
+	public function renderer() {
+		if ( null === $this->renderer ) {
+			$this->renderer = new Renderer( $this->videos(), $this->playlists() );
+		}
+
+		return $this->renderer;
+	}
+
+	/**
 	 * Load existing procedural files in their original order.
 	 *
 	 * @return void
@@ -159,10 +183,13 @@ final class Plugin {
 	private function register_rs_components() {
 		( new PlaylistPostType() )->register();
 		( new PlaylistImportAjax( $this->playlist_importer() ) )->register();
+		( new ShortcodeRegistrar( $this->renderer() ) )->register();
 
 		if ( is_admin() ) {
+			( new AdminMenu( $this->playlists() ) )->register();
 			( new VideoLibraryColumns() )->register();
 			( new PlaylistImportsPage( $this->playlists() ) )->register();
+			( new SettingsPage() )->register();
 		}
 	}
 }

@@ -10,9 +10,12 @@ function pvp_enqueue_frontend_styles() {
 
 	$has_block     = has_block( 'protected-video-playlist/playlist', $post->ID );
 	$has_shortcode = has_shortcode( $post->post_content, 'protected_playlist' );
+	$has_rs_shortcode = has_shortcode( $post->post_content, 'rsplr_video' ) ||
+		has_shortcode( $post->post_content, 'rsplr_playlist' ) ||
+		has_shortcode( $post->post_content, 'rsplr_campaign' );
 	$has_parent    = has_block( 'protected-video/protected-video', $post->ID );
 
-	if ( ! $has_block && ! $has_shortcode && ! $has_parent ) {
+	if ( ! $has_block && ! $has_shortcode && ! $has_rs_shortcode && ! $has_parent ) {
 		return;
 	}
 
