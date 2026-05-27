@@ -4,7 +4,7 @@
  * Description: Extends the Protected Video block to support YouTube playlists.
  * Version:     2.0.0
  * Requires Plugins: protected-video
- * Author:      Homaira Sharmin
+ * Author:      MD.Ridwan
  * License:     GPL-2.0-or-later
  */
 
@@ -95,5 +95,17 @@ if ( ! function_exists( 'rsplr_settings' ) ) {
 if ( ! function_exists( 'rsplr_videos' ) ) {
 	function rsplr_videos() {
 		return rsplr_plugin()->videos();
+	}
+}
+
+if ( ! function_exists( 'rsplr_playlists' ) ) {
+	function rsplr_playlists() {
+		return rsplr_plugin()->playlists();
+	}
+}
+
+if ( ! function_exists( 'rsplr_playlist_importer' ) ) {
+	function rsplr_playlist_importer() {
+		return rsplr_plugin()->playlist_importer();
 	}
 }

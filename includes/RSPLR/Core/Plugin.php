@@ -9,7 +9,13 @@ namespace RSPLR\Core;
 
 use RSPLR\Settings\SettingsRepository;
 use RSPLR\Repository\VideoRepository;
+use RSPLR\Repository\PlaylistRepository;
 use RSPLR\Admin\VideoLibraryColumns;
+use RSPLR\Admin\PlaylistImportsPage;
+use RSPLR\Ajax\PlaylistImportAjax;
+use RSPLR\CPT\PlaylistPostType;
+use RSPLR\Import\PlaylistImporter;
+use RSPLR\Import\YouTubeClient;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,6 +44,20 @@ final class Plugin {
 	private $videos = null;
 
 	/**
+	 * Playlist repository.
+	 *
+	 * @var PlaylistRepository|null
+	 */
+	private $playlists = null;
+
+	/**
+	 * Playlist importer.
+	 *
+	 * @var PlaylistImporter|null
+	 */
+	private $playlist_importer = null;
+
+	/**
 	 * Initialize the current compatibility layer.
 	 *
 	 * @return void
@@ -49,6 +69,7 @@ final class Plugin {
 
 		$this->initialized = true;
 		$this->load_legacy_files();
+		$this->register_rs_components();
 	}
 
 	/**
@@ -78,6 +99,36 @@ final class Plugin {
 	}
 
 	/**
+	 * Get playlist repository.
+	 *
+	 * @return PlaylistRepository
+	 */
+	public function playlists() {
+		if ( null === $this->playlists ) {
+			$this->playlists = new PlaylistRepository();
+		}
+
+		return $this->playlists;
+	}
+
+	/**
+	 * Get playlist importer.
+	 *
+	 * @return PlaylistImporter
+	 */
+	public function playlist_importer() {
+		if ( null === $this->playlist_importer ) {
+			$this->playlist_importer = new PlaylistImporter(
+				$this->playlists(),
+				$this->videos(),
+				new YouTubeClient( $this->settings() )
+			);
+		}
+
+		return $this->playlist_importer;
+	}
+
+	/**
 	 * Load existing procedural files in their original order.
 	 *
 	 * @return void
@@ -92,12 +143,26 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			require_once RSPLR_PLUGIN_DIR . 'admin/class-pvp-admin.php';
-			( new VideoLibraryColumns() )->register();
 		}
 
 		if ( ! is_admin() ) {
 			require_once RSPLR_PLUGIN_DIR . 'includes/public/class-pvp-frontend.php';
 			require_once RSPLR_PLUGIN_DIR . 'fallback/class-pvp-shortcode.php';
+		}
+	}
+
+	/**
+	 * Register new RS SecurePlayer components.
+	 *
+	 * @return void
+	 */
+	private function register_rs_components() {
+		( new PlaylistPostType() )->register();
+		( new PlaylistImportAjax( $this->playlist_importer() ) )->register();
+
+		if ( is_admin() ) {
+			( new VideoLibraryColumns() )->register();
+			( new PlaylistImportsPage( $this->playlists() ) )->register();
 		}
 	}
 }

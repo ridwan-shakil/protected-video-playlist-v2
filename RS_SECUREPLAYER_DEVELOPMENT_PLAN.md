@@ -608,3 +608,7 @@ Phase 1 is complete when the plugin has an `RSPLR` namespace foundation, autoloa
 ## 16. Phase 2 Completion Notes
 
 Phase 2 is complete when imported videos have a repository abstraction around the legacy `pvp_video` CPT, missing saved/read meta keys are registered, playlist import upserts use the repository, and the Video Library admin list exposes provider/source metadata without changing existing `pvp_video` storage.
+
+## 17. Phase 3 Completion Notes
+
+Phase 3 is complete when playlists are first-class `rsplr_playlist` entities, admins can enter a playlist URL and name from the Playlist Imports page, AJAX can start and continue imports from one click, YouTube API imports process one page per request, RSS fallback is automatic, and imported videos continue to upsert into the existing video library without deleting customizations.
