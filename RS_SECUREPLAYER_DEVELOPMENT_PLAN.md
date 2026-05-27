@@ -604,3 +604,7 @@ Phase 0 is complete when the repository contains this roadmap and the current pl
 ## 15. Phase 1 Completion Notes
 
 Phase 1 is complete when the plugin has an `RSPLR` namespace foundation, autoloading, a core bootstrap class, settings access through a repository, and compatibility wrappers that keep existing procedural behavior intact. The current legacy files must still load in their original order, and existing frontend/admin behavior should remain unchanged.
+
+## 16. Phase 2 Completion Notes
+
+Phase 2 is complete when imported videos have a repository abstraction around the legacy `pvp_video` CPT, missing saved/read meta keys are registered, playlist import upserts use the repository, and the Video Library admin list exposes provider/source metadata without changing existing `pvp_video` storage.

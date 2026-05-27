@@ -91,3 +91,9 @@ if ( ! function_exists( 'rsplr_settings' ) ) {
 		return rsplr_plugin()->settings();
 	}
 }
+
+if ( ! function_exists( 'rsplr_videos' ) ) {
+	function rsplr_videos() {
+		return rsplr_plugin()->videos();
+	}
+}

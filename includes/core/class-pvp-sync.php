@@ -193,57 +193,20 @@ function pvp_sync_via_rss( $playlist_url ) {
 
 // ── Save videos as CPT posts ──────────────────────────────────────────────────
 function pvp_save_videos_as_cpt( $videos, $playlist_id ) {
-    foreach ( $videos as $video ) {
+    foreach ( $videos as $index => $video ) {
         if ( empty( $video['video_id'] ) ) {
             continue;
         }
 
-        $video_id  = sanitize_text_field( $video['video_id'] );
-        $title     = isset( $video['title'] ) ? sanitize_text_field( $video['title'] ) : '';
-        $video_url = isset( $video['url'] ) ? esc_url_raw( $video['url'] ) : '';
-        $thumbnail = isset( $video['thumbnail'] ) ? esc_url_raw( $video['thumbnail'] ) : '';
+        $video['playlist_id'] = $playlist_id;
+        $video['provider']    = 'youtube';
+        $video['position']    = $index;
 
-        $existing_posts = get_posts( array(
-            'post_type'      => 'pvp_video',
-            'post_status'    => 'any',
-            'fields'         => 'ids',
-            'numberposts'    => 1,
-            'meta_query'     => array(
-                'relation' => 'AND',
-                array(
-                    'key'   => '_pvp_playlist_id',
-                    'value' => $playlist_id,
-                ),
-                array(
-                    'key'   => '_pvp_video_id',
-                    'value' => $video_id,
-                ),
-            ),
-        ) );
-
-        $post_id = ! empty( $existing_posts ) ? absint( $existing_posts[0] ) : 0;
-
-        if ( $post_id ) {
-            $current_title = get_the_title( $post_id );
-            if ( $title && $title !== $current_title ) {
-                wp_update_post( array(
-                    'ID'         => $post_id,
-                    'post_title' => $title,
-                ) );
-            }
-        } else {
-            $post_id = wp_insert_post( array(
-                'post_type'   => 'pvp_video',
-                'post_title'  => $title,
-                'post_status' => 'publish',
-            ) );
-        }
-
-        if ( $post_id && ! is_wp_error( $post_id ) ) {
-            update_post_meta( $post_id, '_pvp_video_id', $video_id );
-            update_post_meta( $post_id, '_pvp_video_url', $video_url );
-            update_post_meta( $post_id, '_pvp_playlist_id', $playlist_id );
-            update_post_meta( $post_id, '_pvp_thumbnail_url', $thumbnail );
+        if ( function_exists( 'rsplr_videos' ) ) {
+            rsplr_videos()->upsert_imported_video( $video );
+        } elseif ( class_exists( '\RSPLR\Repository\VideoRepository' ) ) {
+            $repository = new \RSPLR\Repository\VideoRepository();
+            $repository->upsert_imported_video( $video );
         }
     }
 }

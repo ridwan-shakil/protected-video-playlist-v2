@@ -137,8 +137,16 @@ function pvp_register_video_meta() {
     ) );
 
     $new_meta_fields = array(
+        '_pvp_provider'             => 'string',
+        '_pvp_video_source_type'    => 'string',
+        '_pvp_playlist_position'    => 'integer',
+        '_pvp_import_updated_at'    => 'string',
         '_pvp_video_logo_opacity'  => 'integer',
         '_pvp_video_logo_position' => 'string',
+        '_pvp_video_logo_unit'     => 'string',
+        '_pvp_video_logo_radius'   => 'integer',
+        '_pvp_video_logo_radius_unit' => 'string',
+        '_pvp_video_logo_circle'   => 'integer',
         '_pvp_video_logo_rounded'  => 'integer',
         '_pvp_video_logo_cropped'  => 'integer',
         '_pvp_video_overlay_height'  => 'integer',

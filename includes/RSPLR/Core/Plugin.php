@@ -8,6 +8,8 @@
 namespace RSPLR\Core;
 
 use RSPLR\Settings\SettingsRepository;
+use RSPLR\Repository\VideoRepository;
+use RSPLR\Admin\VideoLibraryColumns;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,6 +29,13 @@ final class Plugin {
 	 * @var SettingsRepository|null
 	 */
 	private $settings = null;
+
+	/**
+	 * Video repository.
+	 *
+	 * @var VideoRepository|null
+	 */
+	private $videos = null;
 
 	/**
 	 * Initialize the current compatibility layer.
@@ -56,6 +65,19 @@ final class Plugin {
 	}
 
 	/**
+	 * Get video library repository.
+	 *
+	 * @return VideoRepository
+	 */
+	public function videos() {
+		if ( null === $this->videos ) {
+			$this->videos = new VideoRepository();
+		}
+
+		return $this->videos;
+	}
+
+	/**
 	 * Load existing procedural files in their original order.
 	 *
 	 * @return void
@@ -70,6 +92,7 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			require_once RSPLR_PLUGIN_DIR . 'admin/class-pvp-admin.php';
+			( new VideoLibraryColumns() )->register();
 		}
 
 		if ( ! is_admin() ) {
