@@ -18,6 +18,15 @@ define( 'PVP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 // define( 'PVP_PLUGIN_URL', plugins_url( '/', __FILE__ ) );
 define( 'PVP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+define( 'RSPLR_VERSION', PVP_VERSION );
+define( 'RSPLR_PLUGIN_FILE', __FILE__ );
+define( 'RSPLR_PLUGIN_DIR', PVP_PLUGIN_DIR );
+define( 'RSPLR_PLUGIN_URL', PVP_PLUGIN_URL );
+define( 'RSPLR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
+require_once RSPLR_PLUGIN_DIR . 'includes/RSPLR/Autoloader.php';
+\RSPLR\Autoloader::register();
+
 // ── Activation / Deactivation Hooks ───────────────────────
 register_activation_hook( __FILE__, 'pvp_activate' );
 register_deactivation_hook( __FILE__, 'pvp_deactivate' );
@@ -36,25 +45,7 @@ function pvp_init_addon() {
 		return;
 	}
 
-	// ── Load shared/core (needed everywhere) ──
-	require_once PVP_PLUGIN_DIR . 'fallback/class-pvp-functions.php';
-	require_once PVP_PLUGIN_DIR . 'includes/core/class-pvp-cpt.php';
-	require_once PVP_PLUGIN_DIR . 'includes/core/class-pvp-sync.php';
-	require_once PVP_PLUGIN_DIR . 'includes/api/class-pvp-youtube.php';
-	require_once PVP_PLUGIN_DIR . 'includes/core/class-pvp-render.php';
-	require_once PVP_PLUGIN_DIR . 'includes/core/class-pvp-block.php';
-	// ── Admin only ──
-	if ( is_admin() ) {
-		require_once PVP_PLUGIN_DIR . 'admin/class-pvp-admin.php';
-
-	}
-
-	// ── Frontend only ──
-	if ( ! is_admin() ) {
-		require_once PVP_PLUGIN_DIR . 'includes/public/class-pvp-frontend.php';
-		require_once PVP_PLUGIN_DIR . 'fallback/class-pvp-shortcode.php';
-
-	}
+	rsplr_plugin()->init();
 }
 
 function pvp_missing_parent_notice() {
@@ -75,6 +66,28 @@ function pvp_missing_parent_notice() {
 
 if ( ! function_exists( 'pvp_get_settings' ) ) {
 	function pvp_get_settings() {
+		if ( function_exists( 'rsplr_settings' ) ) {
+			return rsplr_settings()->all();
+		}
+
 		return get_option( 'pvp_settings', array() );
+	}
+}
+
+if ( ! function_exists( 'rsplr_plugin' ) ) {
+	function rsplr_plugin() {
+		static $plugin = null;
+
+		if ( null === $plugin ) {
+			$plugin = new \RSPLR\Core\Plugin();
+		}
+
+		return $plugin;
+	}
+}
+
+if ( ! function_exists( 'rsplr_settings' ) ) {
+	function rsplr_settings() {
+		return rsplr_plugin()->settings();
 	}
 }
